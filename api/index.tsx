@@ -44,7 +44,7 @@ app.hono.post("/fart", async (c) => {
 
     await fart(fid, username);
 
-    let message = `You farted ${username}`;
+    let message = `You farted on ${username}`;
     if (message.length > 30) {
       message = "Farted!";
     }
