@@ -5,15 +5,15 @@ import { neynar as neynarHub } from "frog/hubs";
 import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
 import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
-import { upthumb } from "../lib/upthumb.js";
+import { fart } from "../lib/farts.js";
 import { Box, Heading, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 
-const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "";
+const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
 const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 
 const ADD_URL =
-  "https://warpcast.com/~/add-cast-action?name=Upthumb&icon=thumbsup&actionType=post&postUrl=https://upthumbs.vercel.app/api/upthumb";
+  "https://warpcast.com/~/add-cast-action?name=FartcasterAction&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
 
 export const app = new Frog({
   assetsPath: "/",
@@ -29,7 +29,7 @@ export const app = new Frog({
 );
 
 // Cast action handler
-app.hono.post("/upthumb", async (c) => {
+app.hono.post("/fart", async (c) => {
   const {
     trustedData: { messageBytes },
   } = await c.req.json();
@@ -42,11 +42,11 @@ app.hono.post("/upthumb", async (c) => {
     );
     const { cast: { author: { fid, username } } } = cast;
 
-    await upthumb(fid, username);
+    await fart(fid, username);
 
-    let message = `You upthumbed ${username}`;
+    let message = `You farted ${username}`;
     if (message.length > 30) {
-      message = "Upthumbed!";
+      message = "Farted!";
     }
 
     return c.json({ message });
@@ -68,7 +68,7 @@ app.frame("/", (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="64">
-            Upthumbs 👍
+            Farts 💨
           </Heading>
         </VStack>
       </Box>
@@ -78,15 +78,15 @@ app.frame("/", (c) => {
       <Button value="leaderboard" action="/leaderboard">
         🏆 Leaderboard
       </Button>,
-      <Button value="start" action="/upthumbs">
-        👍 My Upthumbs
+      <Button value="start" action="/farts">
+        💨 My Farts
       </Button>,
     ],
   });
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders = await redis.zrevrange("upthumbs", 0, 3, "WITHSCORES");
+  const leaders = await redis.zrevrange("farts", 0, 3, "WITHSCORES");
   const [firstFid, firstScore, secondFid, secondScore, thirdFid, thirdScore] =
     leaders;
 
@@ -125,9 +125,9 @@ app.frame("/leaderboard", async (c) => {
   });
 });
 
-app.frame("/upthumbs", async (c) => {
+app.frame("/farts", async (c) => {
   const fid = c.var.interactor?.fid ?? 0;
-  const upthumbs = await redis.zscore("upthumbs", fid);
+  const farts = await redis.zscore("farts", fid);
 
   return c.res({
     image: (
@@ -140,10 +140,10 @@ app.frame("/upthumbs", async (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="48">
-            Your Upthumbs:
+            Your Farts:
           </Heading>
           <Text align="center" size="32">
-            {upthumbs}
+            {farts}
           </Text>
         </VStack>
       </Box>
