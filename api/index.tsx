@@ -86,7 +86,7 @@ app.frame("/", (c) => {
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders = await redis.zrevrange("farts", 0, 3, "WITHSCORES");
+  const leaders = await redis.zrange("farts", 0, 3, {rev: true, withScores: true});
   const [firstFid, firstScore, secondFid, secondScore, thirdFid, thirdScore] =
     leaders;
 
