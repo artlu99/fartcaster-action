@@ -105,17 +105,17 @@ app.frame("/leaderboard", async (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="48">
-            Leaderboard
+            Most Farted on Users
           </Heading>
           <Box paddingLeft="128">
             <Text align="left" size="32">
-              🥇 {firstName}: {firstScore}
+              🥇 {firstName}: {firstScore} 💨💨💨
             </Text>
             <Text align="left" size="32">
-              🥈 {secondName}: {secondScore}
+              🥈 {secondName}: {secondScore} 💨💨
             </Text>
             <Text align="left" size="32">
-              🥉 {thirdName}: {thirdScore}
+              🥉 {thirdName}: {thirdScore} 💨
             </Text>
           </Box>
         </VStack>
