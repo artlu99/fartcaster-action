@@ -161,6 +161,9 @@ app.frame("/farts", async (c) => {
   try {
     farts = await redis.zscore("farts", fid) ?? "0";
   } catch (e) {}
+  try {
+    const possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
+  } catch (e) {}
 
   return c.res({
     image: (
@@ -176,7 +179,7 @@ app.frame("/farts", async (c) => {
             Your Farts:
           </Heading>
           <Text align="center" size="32">
-            {farts}
+            {farts} {possiblyShielded}
           </Text>
         </VStack>
       </Box>
