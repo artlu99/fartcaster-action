@@ -40,13 +40,20 @@ app.hono.post("/fart", async (c) => {
       result.action.cast.hash,
       CastParamType.Hash
     );
-    const { cast: { author: { fid, username } } } = cast;
+    const {
+      cast: {
+        author: { fid, username },
+      },
+    } = cast;
 
     await fart(fid, username);
 
     let message = `You farted on ${username}`;
     if (message.length > 30) {
       message = "Farted!";
+    }
+    if (result.action.interactor.fid === fid) {
+      message = "+1 bruh, u farted on urself!"
     }
 
     return c.json({ message });
@@ -107,7 +114,7 @@ app.frame("/leaderboard", async (c) => {
           <Heading color="fcPurple" align="center" size="48">
             Most Farted on Users
           </Heading>
-          <Box paddingLeft="128">
+          <Box>
             <Text align="left" size="32">
               🥇 {firstName}: {firstScore} 💨💨💨
             </Text>
@@ -127,7 +134,10 @@ app.frame("/leaderboard", async (c) => {
 
 app.frame("/farts", async (c) => {
   const fid = c.var.interactor?.fid ?? 0;
-  const farts = await redis.zscore("farts", fid);
+  let farts = "0";
+  try {
+    farts = await redis.zscore("farts", fid) ?? "0";
+  } catch (e) {}
 
   return c.res({
     image: (
