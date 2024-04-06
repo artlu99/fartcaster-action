@@ -5,7 +5,7 @@ import { neynar as neynarHub } from "frog/hubs";
 import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
 import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
-import { fart } from "../lib/fart.js";
+import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 
@@ -46,17 +46,30 @@ app.hono.post("/fart", async (c) => {
       },
     } = cast;
 
-    await fart(fid, username);
-
-    let message = `You farted on ${username}`;
-    if (message.length > 30) {
-      message = "Farted!";
-    }
+    let message = 'preparing to Fart...';
     if (result.action.interactor.fid === fid) {
-      message = "Bro, you farted on yourself. +1"
+      await candle(fid, username);
+      message = 'You lit a candle to remove a fart.';
+    } else {
+      const isCastAuthorShielded = await isShielded(fid);
+      if (isCastAuthorShielded) {
+        await fart(
+          result.action.interactor.fid,
+          result.action.interactor.username
+        );
+        message = `${username} farted on you!`;
+        if (message.length > 30) {
+          message = "Shields up!";
+        }
+      } else {
+        await fart(fid, username);
+        message = `You farted on ${username}`;
+        if (message.length > 30) {
+          message = "Farted!";
+        }
+      }
     }
-
-    return c.json({ message });
+    return c.json({ message });  
   } else {
     return c.json({ message: "Unauthorized" }, 401);
   }
