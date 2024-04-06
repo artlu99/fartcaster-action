@@ -53,7 +53,7 @@ app.hono.post("/fart", async (c) => {
       message = "Farted!";
     }
     if (result.action.interactor.fid === fid) {
-      message = "+1 bruh, u farted on urself!"
+      message = "Bro, you farted on yourself. +1"
     }
 
     return c.json({ message });
@@ -93,13 +93,17 @@ app.frame("/", (c) => {
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders = await redis.zrange("farts", 0, 3, {rev: true, withScores: true});
-  const [firstFid, firstScore, secondFid, secondScore, thirdFid, thirdScore] =
+  const leaders = await redis.zrange("farts", 0, 5, {rev: true, withScores: true});
+  const [firstFid, firstScore, secondFid, secondScore, thirdFid, thirdScore,
+    fourthFid, fourthScore, fifthFid, fifthScore
+  ] =
     leaders;
 
   const firstName = await redis.hget("usernames", firstFid);
   const secondName = await redis.hget("usernames", secondFid);
   const thirdName = await redis.hget("usernames", thirdFid);
+  const fourthName = await redis.hget("usernames", fourthFid);
+  const fifthName = await redis.hget("usernames", fifthFid);
 
   return c.res({
     image: (
@@ -123,6 +127,12 @@ app.frame("/leaderboard", async (c) => {
             </Text>
             <Text align="left" size="32">
               🥉 {thirdName}: {thirdScore} 💨
+            </Text>
+            <Text align="left" size="32">
+              🥉 {fourthName}: {fourthScore} 💨
+            </Text>
+            <Text align="left" size="32">
+              🥉 {fifthName}: {fifthScore} 💨
             </Text>
           </Box>
         </VStack>
