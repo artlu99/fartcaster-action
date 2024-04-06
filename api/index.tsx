@@ -49,7 +49,7 @@ app.hono.post("/fart", async (c) => {
     let message = 'preparing to Fart...';
     if (result.action.interactor.fid === fid) {
       await candle(fid, username);
-      message = 'You lit a candle to remove a fart.';
+      message = 'Lit candle, 1 fart removed.';
     } else {
       const isCastAuthorShielded = await isShielded(fid);
       if (isCastAuthorShielded) {
