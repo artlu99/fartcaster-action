@@ -161,8 +161,9 @@ app.frame("/farts", async (c) => {
   try {
     farts = await redis.zscore("farts", fid) ?? "0";
   } catch (e) {}
+  let possiblyShielded = '';
   try {
-    const possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
+    possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
   } catch (e) {}
 
   return c.res({
