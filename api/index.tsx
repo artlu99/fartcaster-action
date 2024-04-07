@@ -180,7 +180,6 @@ app.frame("/farts", async (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="48">
-            Your Farts:
             🍑💨 My Farts:
           </Heading>
           <Text align="center" size="32">
