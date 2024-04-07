@@ -157,6 +157,42 @@ app.frame("/leaderboard", async (c) => {
   });
 });
 
+// delete this after 1 week when cache has cleared for original frame
+app.frame("/farts", async (c) => {
+  const fid = c.var.interactor?.fid ?? 0;
+  let farts = "0";
+  try {
+    farts = await redis.zscore("farts", fid) ?? "0";
+  } catch (e) {}
+  let possiblyShielded = '';
+  try {
+    possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
+  } catch (e) {}
+
+  return c.res({
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <VStack gap="4">
+          <Heading color="fcPurple" align="center" size="48">
+            Your Farts:
+            🍑💨 My Farts:
+          </Heading>
+          <Text align="center" size="32">
+            {farts} {possiblyShielded}
+          </Text>
+        </VStack>
+      </Box>
+    ),
+    intents: [<Button.Reset>⬅️ Back</Button.Reset>],
+  });
+});
+
 // @ts-ignore
 const isEdgeFunction = typeof EdgeFunction !== "undefined";
 const isProduction = isEdgeFunction || import.meta.env?.MODE !== "development";
