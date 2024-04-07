@@ -97,66 +97,19 @@ app.frame("/", (c) => {
     intents: [
       <Button.Link href={ADD_URL}>Add Action</Button.Link>,
       <Button value="leaderboard" action="/leaderboard">
-        🏆 Leaderboard
-      </Button>,
-      <Button value="start" action="/farts">
-        💨 My Farts
+        💨 Leaderboard
       </Button>,
     ],
   });
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders = await redis.zrange("farts", 0, 5, {rev: true, withScores: true});
-  const [firstFid, firstScore, secondFid, secondScore, thirdFid, thirdScore,
-    fourthFid, fourthScore, fifthFid, fifthScore
-  ] =
-    leaders;
+  const leaders = await redis.zrange("farts", 0, 3, {rev: true, withScores: true});
 
-  const firstName = await redis.hget("usernames", firstFid);
-  const secondName = await redis.hget("usernames", secondFid);
-  const thirdName = await redis.hget("usernames", thirdFid);
-  const fourthName = await redis.hget("usernames", fourthFid);
-  const fifthName = await redis.hget("usernames", fifthFid);
+  const firstName = await redis.hget("usernames", leaders[0]);
+  const secondName = await redis.hget("usernames", leaders[2]);
+  const thirdName = await redis.hget("usernames", leaders[4]);
 
-  return c.res({
-    image: (
-      <Box
-        grow
-        alignVertical="center"
-        backgroundColor="white"
-        padding="32"
-        border="1em solid rgb(138, 99, 210)"
-      >
-        <VStack gap="4">
-          <Heading color="fcPurple" align="center" size="48">
-            Most Farted on Users
-          </Heading>
-          <Box>
-            <Text align="left" size="32">
-              🥇 {firstName}: {firstScore} 💨💨💨
-            </Text>
-            <Text align="left" size="32">
-              🥈 {secondName}: {secondScore} 💨💨
-            </Text>
-            <Text align="left" size="32">
-              🥉 {thirdName}: {thirdScore} 💨
-            </Text>
-            <Text align="left" size="32">
-              🥉 {fourthName}: {fourthScore} 💨
-            </Text>
-            <Text align="left" size="32">
-              🥉 {fifthName}: {fifthScore} 💨
-            </Text>
-          </Box>
-        </VStack>
-      </Box>
-    ),
-    intents: [<Button.Reset>⬅️ Back</Button.Reset>],
-  });
-});
-
-app.frame("/farts", async (c) => {
   const fid = c.var.interactor?.fid ?? 0;
   let farts = "0";
   try {
@@ -178,7 +131,21 @@ app.frame("/farts", async (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="48">
-            Your Farts:
+            Most Farted on Users
+          </Heading>
+          <Box>
+            <Text align="left" size="32">
+              🥇 {firstName}: {leaders[1]} 💨💨💨
+            </Text>
+            <Text align="left" size="32">
+              🥈 {secondName}: {leaders[3]} 💨💨
+            </Text>
+            <Text align="left" size="32">
+              🥉 {thirdName}: {leaders[5]} 💨
+            </Text>
+          </Box>
+          <Heading color="fcPurple" align="center" size="48">
+            🍑💨 My Farts:
           </Heading>
           <Text align="center" size="32">
             {farts} {possiblyShielded}
