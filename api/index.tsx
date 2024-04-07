@@ -61,6 +61,7 @@ app.hono.post("/fart", async (c) => {
         if (message.length > 30) {
           message = "Shields up!";
         }
+        return c.json({ message }, 400);  
       } else {
         await fart(fid, username);
         message = `You farted on ${username}`;
