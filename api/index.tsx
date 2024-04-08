@@ -12,7 +12,7 @@ import redis from "../lib/redis.js";
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
 const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 
-const ADD_URL =
+const ADD_URL = process.env.ADD_URL ?? 
   "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
 
 export const app = new Frog({
