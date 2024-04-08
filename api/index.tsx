@@ -15,6 +15,9 @@ const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 const ADD_URL = process.env.ADD_URL ?? 
   "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
 
+const REPO_URL = process.env.REPO_URL ??
+  "https://github.com/artlu99/fartcaster-action";
+
 export const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
@@ -153,7 +156,10 @@ app.frame("/leaderboard", async (c) => {
         </VStack>
       </Box>
     ),
-    intents: [<Button.Reset>⬅️ Back</Button.Reset>],
+    intents: [
+      <Button.Reset>⬅️ Back</Button.Reset>,
+      <Button.Link href={REPO_URL}>GitHub</Button.Link>,
+    ],
   });
 });
 
