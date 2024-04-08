@@ -196,11 +196,11 @@ app.frame("/more", async (c) => {
       >
         <VStack gap="4">
           <Heading color="fcPurple" align="center" size="48">
-            On {usercount} Users Farted 🍑💨
+            Farted on {usercount} Users
           </Heading>
           <Box>
             <Text align="left" size="32">
-              {most1}: {most[1]}
+              {most1}: {most[1]} 🍑💨
             </Text>
             <Text align="left" size="32">
               {most2}: {most[3]}
