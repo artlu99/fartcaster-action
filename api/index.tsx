@@ -6,7 +6,7 @@ import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
 import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
-import { Box, Heading, Text, VStack, vars } from "../lib/ui.js";
+import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
