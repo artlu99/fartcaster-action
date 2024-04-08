@@ -114,9 +114,9 @@ app.frame("/leaderboard", async (c) => {
   const thirdName = await redis.hget("usernames", leaders[4]);
 
   const fid = c.var.interactor?.fid ?? 0;
-  let farts = "0";
+  let farts = 0;
   try {
-    farts = await redis.zscore("farts", fid) ?? "0";
+    farts = await redis.zscore("farts", fid) ?? 0;
   } catch (e) {}
   let possiblyShielded = '';
   try {
@@ -167,21 +167,19 @@ app.frame("/leaderboard", async (c) => {
 });
 
 app.frame("/more", async (c) => {
-  const most = await redis.zrange("farts", 0, 5, {rev: true, withScores: true});
-  const least = await redis.zrange("farts", 0, 5, {rev: false, withScores: true});
+  const most = await redis.zrange("farts", 0, 10, {rev: true, withScores: true});
 
   // this code probably fails badly before there's enough data
-  const most1 = await redis.hget("usernames", most[0]);
-  const most2 = await redis.hget("usernames", most[2]);
-  const most3 = await redis.hget("usernames", most[4]);
-  const most4 = await redis.hget("usernames", most[6]);
-  const most5 = await redis.hget("usernames", most[8]);
-
-  const least1 = await redis.hget("usernames", least[0]);
-  const least2 = await redis.hget("usernames", least[2]);
-  const least3 = await redis.hget("usernames", least[4]);
-  const least4 = await redis.hget("usernames", least[6]);
-  const least5 = await redis.hget("usernames", least[8]);
+  const most0 = await redis.hget("usernames", most[0]);
+  const most1 = await redis.hget("usernames", most[2]);
+  const most2 = await redis.hget("usernames", most[4]);
+  const most3 = await redis.hget("usernames", most[6]);
+  const most4 = await redis.hget("usernames", most[8]);
+  const most5 = await redis.hget("usernames", most[10]);
+  const most6 = await redis.hget("usernames", most[12]);
+  const most7 = await redis.hget("usernames", most[14]);
+  const most8 = await redis.hget("usernames", most[16]);
+  const most9 = await redis.hget("usernames", most[18]);
 
   const usercount = await redis.hlen("usernames") ?? '0';
 
@@ -195,26 +193,45 @@ app.frame("/more", async (c) => {
         border="1em solid rgb(138, 99, 210)"
       >
         <VStack gap="4">
-          <Heading color="fcPurple" align="center" size="48">
-            Farted on {usercount} Users
+          <Heading color="fcPurple" align="center" size="32">
+            Farted on {usercount} Unique Users 🍑💨
           </Heading>
-          <Box>
-            <Text align="left" size="32">
-              {most1}: {most[1]} 🍑💨
-            </Text>
-            <Text align="left" size="32">
-              {most2}: {most[3]}
-            </Text>
-            <Text align="left" size="32">
-              {most3}: {most[5]}
-            </Text>
-            <Text align="left" size="32">
-              {most4}: {most[7]}
-            </Text>
-            <Text align="left" size="32">
-              {most5}: {most[9]}
-            </Text>
-          </Box>
+          <HStack gap="32">
+            <Box>
+              <Text align="left" size="32">
+                {most0}: {most[1]}
+              </Text>
+              <Text align="left" size="32">
+                {most1}: {most[3]}
+              </Text>
+              <Text align="left" size="32">
+                {most2}: {most[5]}
+              </Text>
+              <Text align="left" size="32">
+                {most3}: {most[7]}
+              </Text>
+              <Text align="left" size="32">
+                {most4}: {most[9]}
+              </Text>
+            </Box>
+            <Box>
+              <Text align="left" size="32">
+                {most5}: {most[11]}
+              </Text>
+              <Text align="left" size="32">
+                {most6}: {most[13]}
+              </Text>
+              <Text align="left" size="32">
+                {most7}: {most[15]}
+              </Text>
+              <Text align="left" size="32">
+                {most8}: {most[17]}
+              </Text>
+              <Text align="left" size="32">
+                {most9}: {most[19]}
+              </Text>
+            </Box>
+          </HStack>
         </VStack>
       </Box>
     ),
