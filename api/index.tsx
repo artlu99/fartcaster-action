@@ -159,6 +159,68 @@ app.frame("/leaderboard", async (c) => {
     intents: [
       <Button.Reset>⬅️ Back</Button.Reset>,
       <Button.Link href={REPO_URL}>GitHub</Button.Link>,
+      <Button value="start" action="/more">
+        🔟 More
+      </Button>,
+    ],
+  });
+});
+
+app.frame("/more", async (c) => {
+  const most = await redis.zrange("farts", 0, 5, {rev: true, withScores: true});
+  const least = await redis.zrange("farts", 0, 5, {rev: false, withScores: true});
+
+  // this code probably fails badly before there's enough data
+  const most1 = await redis.hget("usernames", most[0]);
+  const most2 = await redis.hget("usernames", most[2]);
+  const most3 = await redis.hget("usernames", most[4]);
+  const most4 = await redis.hget("usernames", most[6]);
+  const most5 = await redis.hget("usernames", most[8]);
+
+  const least1 = await redis.hget("usernames", least[0]);
+  const least2 = await redis.hget("usernames", least[2]);
+  const least3 = await redis.hget("usernames", least[4]);
+  const least4 = await redis.hget("usernames", least[6]);
+  const least5 = await redis.hget("usernames", least[8]);
+
+  const usercount = await redis.hlen("usernames") ?? '0';
+
+  return c.res({
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <VStack gap="4">
+          <Heading color="fcPurple" align="center" size="48">
+            On {usercount} Users Farted 🍑💨
+          </Heading>
+          <Box>
+            <Text align="left" size="32">
+              {most1}: {most[1]}
+            </Text>
+            <Text align="left" size="32">
+              {most2}: {most[3]}
+            </Text>
+            <Text align="left" size="32">
+              {most3}: {most[5]}
+            </Text>
+            <Text align="left" size="32">
+              {most4}: {most[7]}
+            </Text>
+            <Text align="left" size="32">
+              {most5}: {most[9]}
+            </Text>
+          </Box>
+        </VStack>
+      </Box>
+    ),
+    intents: [
+      <Button.Reset>⬅️ Start Over</Button.Reset>,
+      <Button.Link href={REPO_URL}>GitHub</Button.Link>,
     ],
   });
 });
