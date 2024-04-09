@@ -13,11 +13,12 @@ const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
 const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 
 const HUB_URL = process.env.HUB_URL ?? "https://hub.pinata.cloud";
-const ADD_URL = process.env.ADD_URL ?? 
+const ADD_URL =
+  process.env.ADD_URL ??
   "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
 
-const REPO_URL = process.env.REPO_URL ??
-  "https://github.com/artlu99/fartcaster-action";
+const REPO_URL =
+  process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
 
 const fdk = new PinataFDK();
 
@@ -56,10 +57,10 @@ app.hono.post("/fart", async (c) => {
       },
     } = cast;
 
-    let message = 'preparing to Fart...';
+    let msg = "preparing to Fart...";
     if (result.action.interactor.fid === fid) {
       await candle(fid, username);
-      message = 'Lit candle, 1 fart removed.';
+      msg = "Lit candle, 1 fart removed.";
     } else {
       const isCastAuthorShielded = await isShielded(fid);
       if (isCastAuthorShielded) {
@@ -67,20 +68,20 @@ app.hono.post("/fart", async (c) => {
           result.action.interactor.fid,
           result.action.interactor.username
         );
-        message = `${username} farted on you!`;
-        if (message.length > 30) {
-          message = "Shields up!";
+        msg = `${username} farted on you!`;
+        if (msg.length > 30) {
+          msg = "Shields up!";
         }
-        return c.json({ message }, 400);  
+        return c.json({ message: msg }, 400);
       } else {
         await fart(fid, username);
-        message = `You farted on ${username}`;
-        if (message.length > 30) {
-          message = "Farted!";
+        msg = `You farted on ${username}`;
+        if (msg.length > 30) {
+          msg = "Farted!";
         }
       }
     }
-    return c.json({ message });  
+    return c.json({ message: msg });
   } else {
     return c.json({ message: "Unauthorized" }, 401);
   }
@@ -114,7 +115,10 @@ app.frame("/", (c) => {
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders = await redis.zrange("farts", 0, 3, {rev: true, withScores: true});
+  const leaders = await redis.zrange("farts", 0, 3, {
+    rev: true,
+    withScores: true,
+  });
 
   const firstName = await redis.hget("usernames", leaders[0]);
   const secondName = await redis.hget("usernames", leaders[2]);
@@ -123,11 +127,11 @@ app.frame("/leaderboard", async (c) => {
   const fid = c.var.interactor?.fid ?? 0;
   let farts = 0;
   try {
-    farts = await redis.zscore("farts", fid) ?? 0;
+    farts = (await redis.zscore("farts", fid)) ?? 0;
   } catch (e) {}
-  let possiblyShielded = '';
+  let possiblyShielded = "";
   try {
-    possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
+    possiblyShielded = (await redis.sismember("shielded", fid)) ? "🛡️" : "";
   } catch (e) {}
 
   return c.res({
@@ -174,7 +178,10 @@ app.frame("/leaderboard", async (c) => {
 });
 
 app.frame("/more", async (c) => {
-  const most = await redis.zrange("farts", 0, 10, {rev: true, withScores: true});
+  const most = await redis.zrange("farts", 0, 10, {
+    rev: true,
+    withScores: true,
+  });
 
   // this code probably fails badly before there's enough data
   const most0 = await redis.hget("usernames", most[0]);
@@ -188,7 +195,7 @@ app.frame("/more", async (c) => {
   const most8 = await redis.hget("usernames", most[16]);
   const most9 = await redis.hget("usernames", most[18]);
 
-  const usercount = await redis.hlen("usernames") ?? '0';
+  const usercount = (await redis.hlen("usernames")) ?? 0;
 
   return c.res({
     image: (
@@ -252,13 +259,13 @@ app.frame("/more", async (c) => {
 // delete this after 1 week when cache has cleared for original frame
 app.frame("/farts", async (c) => {
   const fid = c.var.interactor?.fid ?? 0;
-  let farts = "0";
+  let farts = 0;
   try {
-    farts = await redis.zscore("farts", fid) ?? "0";
+    farts = (await redis.zscore("farts", fid)) ?? 0;
   } catch (e) {}
-  let possiblyShielded = '';
+  let possiblyShielded = "";
   try {
-    possiblyShielded = await redis.sismember("shielded", fid) ? '🛡️' : '';
+    possiblyShielded = (await redis.sismember("shielded", fid)) ? "🛡️" : "";
   } catch (e) {}
 
   return c.res({
