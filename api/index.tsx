@@ -1,7 +1,6 @@
 import { Button, Frog } from "frog";
 import { devtools } from "frog/dev";
 import { serveStatic } from "frog/serve-static";
-import { neynar as neynarHub } from "frog/hubs";
 import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
 import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
@@ -12,6 +11,7 @@ import redis from "../lib/redis.js";
 const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
 const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 
+const HUB_URL = process.env.HUB_URL ?? "https://hub.pinata.cloud";
 const ADD_URL = process.env.ADD_URL ?? 
   "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
 
@@ -22,7 +22,7 @@ export const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
   ui: { vars },
-  hub: neynarHub({ apiKey: NEYNAR_API_KEY }),
+  hub: { apiUrl: HUB_URL },
   browserLocation: ADD_URL,
 }).use(
   neynar({
