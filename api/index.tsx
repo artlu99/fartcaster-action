@@ -3,6 +3,7 @@ import { devtools } from "frog/dev";
 import { serveStatic } from "frog/serve-static";
 import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
+import { FrameActionPayload, PinataFDK } from "pinata-fdk";
 import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
@@ -17,6 +18,8 @@ const ADD_URL = process.env.ADD_URL ??
 
 const REPO_URL = process.env.REPO_URL ??
   "https://github.com/artlu99/fartcaster-action";
+
+const fdk = new PinataFDK();
 
 export const app = new Frog({
   assetsPath: "/",
@@ -38,7 +41,11 @@ app.hono.post("/fart", async (c) => {
   } = await c.req.json();
 
   const result = await neynarClient.validateFrameAction(messageBytes);
-  if (result.valid) {
+
+  const body = (await c.req.json()) as FrameActionPayload;
+  const { isValid } = await fdk.validateFrameMessage(body);
+
+  if (isValid) {
     const cast = await neynarClient.lookUpCastByHashOrWarpcastUrl(
       result.action.cast.hash,
       CastParamType.Hash

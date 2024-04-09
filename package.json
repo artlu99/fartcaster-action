@@ -11,7 +11,8 @@
     "@neynar/nodejs-sdk": "^1.14.0",
     "@upstash/redis": "^1.29.0",
     "frog": "latest",
-    "hono": "^4"
+    "hono": "^4",
+    "pinata-fdk": "^3.6.1"
   },
   "devDependencies": {
     "tsx": "^4.7.1",
