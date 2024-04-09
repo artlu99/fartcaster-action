@@ -1,16 +1,11 @@
 import { Button, Frog } from "frog";
 import { devtools } from "frog/dev";
 import { serveStatic } from "frog/serve-static";
-import { neynar } from "frog/middlewares";
 import { handle } from "frog/vercel";
 import { FrameActionPayload, PinataFDK } from "pinata-fdk";
-import { CastParamType, NeynarAPIClient } from "@neynar/nodejs-sdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
-
-const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY ?? "NEYNAR_API_DOCS";
-const neynarClient = new NeynarAPIClient(NEYNAR_API_KEY);
 
 const HUB_URL = process.env.HUB_URL ?? "https://hub.pinata.cloud";
 const ADD_URL =
@@ -28,46 +23,40 @@ export const app = new Frog({
   ui: { vars },
   hub: { apiUrl: HUB_URL },
   browserLocation: ADD_URL,
-}).use(
-  neynar({
-    apiKey: NEYNAR_API_KEY,
-    features: ["interactor", "cast"],
-  })
-);
+});
 
 // Cast action handler
 app.hono.post("/fart", async (c) => {
-  const {
-    trustedData: { messageBytes },
-  } = await c.req.json();
-
-  const result = await neynarClient.validateFrameAction(messageBytes);
-
   const body = (await c.req.json()) as FrameActionPayload;
-  const { isValid } = await fdk.validateFrameMessage(body);
+  const { isValid, message } = await fdk.validateFrameMessage(body);
 
-  if (isValid) {
-    const cast = await neynarClient.lookUpCastByHashOrWarpcastUrl(
-      result.action.cast.hash,
-      CastParamType.Hash
-    );
+  if (
+    isValid &&
+    message &&
+    message.data &&
+    message.data.frameActionBody &&
+    message.data.frameActionBody.castId
+  ) {
     const {
-      cast: {
-        author: { fid, username },
+      data: {
+        frameActionBody: {
+          castId: { fid },
+        },
       },
-    } = cast;
+    } = message;
+    const { username } = await fdk.getUserByFid(fid);
 
     let msg = "preparing to Fart...";
-    if (result.action.interactor.fid === fid) {
+    if (message.data.fid === fid) {
       await candle(fid, username);
       msg = "Lit candle, 1 fart removed.";
     } else {
       const isCastAuthorShielded = await isShielded(fid);
       if (isCastAuthorShielded) {
-        await fart(
-          result.action.interactor.fid,
-          result.action.interactor.username
+        const { username: interactorUsername } = await fdk.getUserByFid(
+          message.data.fid
         );
+        await fart(message.data.fid, interactorUsername);
         msg = `${username} farted on you!`;
         if (msg.length > 30) {
           msg = "Shields up!";
