@@ -113,7 +113,7 @@ app.frame("/leaderboard", async (c) => {
   const secondName = await redis.hget("usernames", leaders[2]);
   const thirdName = await redis.hget("usernames", leaders[4]);
 
-  const fid = c.var.interactor?.fid ?? 0;
+  const fid = c.frameData?.fid ?? 0;
   let farts = 0;
   try {
     farts = (await redis.zscore("farts", fid)) ?? 0;
@@ -244,7 +244,7 @@ app.frame("/more", async (c) => {
 
 // delete this after 1 week when cache has cleared for original frame
 app.frame("/farts", async (c) => {
-  const fid = c.var.interactor?.fid ?? 0;
+  const fid = c.frameData?.fid ?? 0;
   let farts = 0;
   try {
     farts = (await redis.zscore("farts", fid)) ?? 0;
