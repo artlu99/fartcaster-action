@@ -148,11 +148,8 @@ app.frame("/leaderboard", async (c) => {
             </Text>
           </Box>
           <Heading color="fcPurple" align="center" size="48">
-            🍑💨 My Farts:
+            My Farts: {farts} {possiblyShielded} 🍑💨
           </Heading>
-          <Text align="center" size="32">
-            {farts} {possiblyShielded}
-          </Text>
         </VStack>
       </Box>
     ),
