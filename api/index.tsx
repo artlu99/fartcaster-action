@@ -1,13 +1,13 @@
 import { Button, Frog } from "frog";
 import { devtools } from "frog/dev";
+import { pinata } from "frog/hubs";
 import { serveStatic } from "frog/serve-static";
 import { handle } from "frog/vercel";
-import { FrameActionPayload, PinataFDK } from "pinata-fdk";
+import { PinataFDK } from "pinata-fdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 
-const HUB_URL = process.env.HUB_URL ?? "https://hub.pinata.cloud";
 const ADD_URL =
   process.env.ADD_URL ??
   "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
@@ -21,58 +21,48 @@ export const app = new Frog({
   assetsPath: "/",
   basePath: "/api",
   ui: { vars },
-  hub: { apiUrl: HUB_URL },
+  hub: pinata(),
   browserLocation: ADD_URL,
 });
 
 // Cast action handler
-app.hono.post("/fart", async (c) => {
-  const body = (await c.req.json()) as FrameActionPayload;
-  const { isValid, message } = await fdk.validateFrameMessage(body);
+app.castAction("/fart", async (c) => {
+  const {
+    verified,
+    actionData: {
+      fid: actionFid,
+      castId: { fid: castFid },
+    },
+  } = c;
 
-  if (
-    isValid &&
-    message &&
-    message.data &&
-    message.data.frameActionBody &&
-    message.data.frameActionBody.castId
-  ) {
-    const {
-      data: {
-        frameActionBody: {
-          castId: { fid },
-        },
-      },
-    } = message;
-    const { username } = await fdk.getUserByFid(fid);
+  if (verified) {
+    const { username } = await fdk.getUserByFid(castFid);
 
-    let msg = "preparing to Fart...";
-    if (message.data.fid === fid) {
-      await candle(fid, username);
-      msg = "Lit candle, 1 fart removed.";
+    let message = "preparing to Fart...";
+    if (castFid === actionFid) {
+      await candle(actionFid, username);
+      message = "Lit candle, 1 fart removed.";
     } else {
-      const isCastAuthorShielded = await isShielded(fid);
+      const isCastAuthorShielded = await isShielded(castFid);
       if (isCastAuthorShielded) {
-        const { username: interactorUsername } = await fdk.getUserByFid(
-          message.data.fid
-        );
-        await fart(message.data.fid, interactorUsername);
-        msg = `${username} farted on you!`;
-        if (msg.length > 30) {
-          msg = "Shields up!";
+        const { username: actionUsername } = await fdk.getUserByFid(actionFid);
+        await fart(castFid, actionUsername);
+        message = `${username} farted on you!`;
+        if (message.length > 30) {
+          message = "Shields up!";
         }
-        return c.json({ message: msg }, 400);
+        return c.res({ message, statusCode: 400 });
       } else {
-        await fart(fid, username);
-        msg = `You farted on ${username}`;
-        if (msg.length > 30) {
-          msg = "Farted!";
+        await fart(actionFid, username);
+        message = `You farted on ${username}`;
+        if (message.length > 30) {
+          message = "Farted!";
         }
       }
     }
-    return c.json({ message: msg });
+    return c.res({ message });
   } else {
-    return c.json({ message: "Unauthorized" }, 401);
+    return c.res({ message: "Unauthorized", statusCode: 401 });
   }
 });
 
