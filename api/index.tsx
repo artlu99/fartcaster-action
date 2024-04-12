@@ -40,20 +40,20 @@ app.castAction("/fart", async (c) => {
 
     let message = "preparing to Fart...";
     if (castFid === actionFid) {
-      await candle(actionFid, username);
+      await candle(castFid, username);
       message = "Lit candle, 1 fart removed.";
     } else {
       const isCastAuthorShielded = await isShielded(castFid);
       if (isCastAuthorShielded) {
         const { username: actionUsername } = await fdk.getUserByFid(actionFid);
-        await fart(castFid, actionUsername);
+        await fart(actionFid, actionUsername);
         message = `${username} farted on you!`;
         if (message.length > 30) {
           message = "Shields up!";
         }
         return c.res({ message, statusCode: 400 });
       } else {
-        await fart(actionFid, username);
+        await fart(castFid, username);
         message = `You farted on ${username}`;
         if (message.length > 30) {
           message = "Farted!";
