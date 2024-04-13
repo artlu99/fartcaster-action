@@ -297,7 +297,7 @@ app.frame("/opt-in-out", async (c) => {
 
   const adsOption = await getOpt("ads", fid);
   const optionText =
-    adsOption === 1 ? "opt in" : adsOption === -1 ? "opt out" : "none";
+    adsOption === 1 ? "opted In" : adsOption === -1 ? "opted Out" : "none";
 
   return c.res({
     action: "/opt-in-out",
