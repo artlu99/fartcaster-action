@@ -8,6 +8,7 @@ import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 import { isKind, setKind, unsetKind } from "../lib/kindness.js";
+import { getOpt, optIn, optOut } from "../lib/userSettings.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -279,6 +280,53 @@ app.frame("/cpanel", async (c) => {
       <Button value={kindMode ? "unset" : "set"}>
         {kindMode ? "Be direct" : "Be kind"}
       </Button>,
+      <Button action="/opt-in-out">Next 👉</Button>,
+    ],
+  });
+});
+
+app.frame("/opt-in-out", async (c) => {
+  const fid = c.frameData?.fid ?? 0;
+
+  const { buttonValue } = c;
+  if (buttonValue === "in") {
+    await optIn("ads", fid);
+  } else if (buttonValue === "out") {
+    await optOut("ads", fid);
+  }
+
+  const adsOption = await getOpt("ads", fid);
+  const optionText =
+    adsOption === 1 ? "opt in" : adsOption === -1 ? "opt out" : "none";
+
+  return c.res({
+    action: "/opt-in-out",
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <Heading color="fcPurple" align="center" size="48">
+          FID {fid}: {optionText}
+        </Heading>
+        <Text align="center" size="24">
+          In: be shown ad frame, log FID
+        </Text>
+        <Text align="center" size="24">
+          Out: no frame, do not log
+        </Text>
+        <Text align="center" size="24">
+          none: no frame, do not log
+        </Text>
+      </Box>
+    ),
+    intents: [
+      <Button.Reset>⬅️ Back</Button.Reset>,
+      <Button value="in">Opt In</Button>,
+      <Button value="out">Opt Out</Button>,
     ],
   });
 });
