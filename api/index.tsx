@@ -38,6 +38,7 @@ app.castAction("/fart", async (c) => {
 
   if (verified) {
     const { username } = await fdk.getUserByFid(castFid);
+    const nsfwFlag = await isAdult(actionFid);
 
     let message = "preparing to Fart...";
     if (castFid === actionFid) {
@@ -48,15 +49,21 @@ app.castAction("/fart", async (c) => {
       if (isCastAuthorShielded) {
         const { username: actionUsername } = await fdk.getUserByFid(actionFid);
         await fart(actionFid, actionUsername);
-        message = `${username} farted on you!`;
-        if (message.length > 30) {
+        message =
+          `${username} farted ` +
+          (nsfwFlag ? "on you!" : "in your general direction");
+        if (message.length > 80) {
           message = "Shields up!";
         }
         return c.res({ message, statusCode: 400 });
       } else {
         await fart(castFid, username);
-        message = `You farted on ${username}`;
-        if (message.length > 30) {
+        message =
+          "You farted " +
+          (nsfwFlag
+            ? `on ${username}`
+            : `in the general direction of ${username}`);
+        if (message.length > 80) {
           message = "Farted!";
         }
       }
