@@ -1,17 +1,23 @@
 import redis from "./redis.js";
 
-export async function attestIsAdult(fid: number) {
+export async function makeExplicit(fld: string, fid: number) {
   const id = fid.toString();
-  await redis.sadd("nsfw", id );
+  await redis.sadd(fld, id );
 }
 
-export async function requestSfw(fid: number) {
+export async function restoreDefault(fld: string, fid: number) {
+  // the default state, i.e., before anything gets specified
   const id = fid.toString();
-  await redis.srem("nsfw", id );
+  await redis.srem(fld, id ); 
 }
 
-export async function isAdult(fid: number): Promise<boolean> {
+export async function optIn(category: string, fid: number) {
   const id = fid.toString();
-  const nsfw = await redis.sismember("nsfw", id);
-  return !!nsfw
+  await redis.hset(category, {[id]: 1} );
+}
+
+export async function optOut(category: string, fid: number) {
+  // 0 is not specified, not opt-out
+  const id = fid.toString();
+  await redis.hset(category, {[id]: -1} );
 }

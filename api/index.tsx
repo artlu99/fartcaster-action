@@ -6,8 +6,8 @@ import { handle } from "frog/vercel";
 import { PinataFDK } from "pinata-fdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
-import { attestIsAdult, isAdult, requestSfw } from "../lib/userSettings.js";
 import redis from "../lib/redis.js";
+import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -38,7 +38,7 @@ app.castAction("/fart", async (c) => {
 
   if (verified) {
     const { username } = await fdk.getUserByFid(castFid);
-    const nsfwFlag = await isAdult(actionFid);
+    const kindMode = await isKind(actionFid);
 
     let message = "preparing to Fart...";
     if (castFid === actionFid) {
@@ -51,7 +51,7 @@ app.castAction("/fart", async (c) => {
         await fart(actionFid, actionUsername);
         message =
           `${username} farted ` +
-          (nsfwFlag ? "on you!" : "in your general direction");
+          (kindMode ? "in your general direction" : "on you!");
         if (message.length > 80) {
           message = "Shields up!";
         }
@@ -60,9 +60,9 @@ app.castAction("/fart", async (c) => {
         await fart(castFid, username);
         message =
           "You farted " +
-          (nsfwFlag
-            ? `on ${username}`
-            : `in the general direction of ${username}`);
+          (kindMode
+            ? `in the general direction of ${username}`
+            : `on ${username}`);
         if (message.length > 80) {
           message = "Farted!";
         }
@@ -247,14 +247,14 @@ app.frame("/cpanel", async (c) => {
   const fid = c.frameData?.fid ?? 0;
 
   const { buttonValue } = c;
-  if (buttonValue === "attest") {
-    await attestIsAdult(fid);
-  } else if (buttonValue === "request") {
-    await requestSfw(fid);
+  if (buttonValue === "set") {
+    await setKind(fid);
+  } else if (buttonValue === "unset") {
+    await unsetKind(fid);
   }
 
   const username = (await redis.hget("usernames", fid.toString())) as string;
-  const nsfwFlag = await isAdult(fid);
+  const kindMode = await isKind(fid);
 
   return c.res({
     action: "/cpanel",
@@ -270,14 +270,14 @@ app.frame("/cpanel", async (c) => {
           {username}
         </Heading>
         <Text align="center" size="32">
-          is adult? {nsfwFlag ? "Y" : "N"}
+          {kindMode ? "I choose to be kind" : "I am direct"}
         </Text>
       </Box>
     ),
     intents: [
       <Button.Reset>⬅️ Back</Button.Reset>,
-      <Button value={nsfwFlag ? "request" : "attest"}>
-        Make {nsfwFlag ? "SFW" : "NSFW"}
+      <Button value={kindMode ? "unset" : "set"}>
+        {kindMode ? "Be direct" : "Be kind"}
       </Button>,
     ],
   });
