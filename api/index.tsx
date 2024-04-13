@@ -6,6 +6,7 @@ import { handle } from "frog/vercel";
 import { PinataFDK } from "pinata-fdk";
 import { candle, fart, isShielded } from "../lib/fart.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
+import { attestIsAdult, isAdult, requestSfw } from "../lib/userSettings.js";
 import redis from "../lib/redis.js";
 
 const ADD_URL =
@@ -88,6 +89,9 @@ app.frame("/", (c) => {
       <Button.Link href={ADD_URL}>Add Action</Button.Link>,
       <Button value="leaderboard" action="/leaderboard">
         💨 Leaderboard
+      </Button>,
+      <Button value="cpanel" action="/cpanel">
+        🎛️ Control Panel
       </Button>,
     ],
   });
@@ -228,6 +232,46 @@ app.frame("/more", async (c) => {
     intents: [
       <Button.Reset>⬅️ Start Over</Button.Reset>,
       <Button.Link href={REPO_URL}>GitHub</Button.Link>,
+    ],
+  });
+});
+
+app.frame("/cpanel", async (c) => {
+  const fid = c.frameData?.fid ?? 0;
+
+  const { buttonValue } = c;
+  if (buttonValue === "attest") {
+    await attestIsAdult(fid);
+  } else if (buttonValue === "request") {
+    await requestSfw(fid);
+  }
+
+  const username = (await redis.hget("usernames", fid.toString())) as string;
+  const nsfwFlag = await isAdult(fid);
+
+  return c.res({
+    action: "/cpanel",
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <Heading color="fcPurple" align="center" size="48">
+          {username}
+        </Heading>
+        <Text align="center" size="32">
+          is adult? {nsfwFlag ? "Y" : "N"}
+        </Text>
+      </Box>
+    ),
+    intents: [
+      <Button.Reset>⬅️ Back</Button.Reset>,
+      <Button value={nsfwFlag ? "request" : "attest"}>
+        Make {nsfwFlag ? "SFW" : "NSFW"}
+      </Button>,
     ],
   });
 });
