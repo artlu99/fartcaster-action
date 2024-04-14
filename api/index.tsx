@@ -9,6 +9,7 @@ import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 import { getOpt, optIn, optOut } from "../lib/userSettings.js";
+import { fcan } from "../lib/fcan.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -16,9 +17,6 @@ const ADD_URL =
 
 const REPO_URL =
   process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
-
-const AD_BLURB_80_CHARS_MAX =
-  process.env.AD_BLURB_80_CHARS_MAX ?? "no advertisement loaded";
 
 const fdk = new PinataFDK();
 
@@ -73,7 +71,7 @@ app.castAction("/fart", async (c) => {
         }
       }
     }
-    if (adsOption === 1) message = AD_BLURB_80_CHARS_MAX;
+    if (adsOption === 1) message = await fcan(actionFid);
 
     return c.res({ message });
   } else {
