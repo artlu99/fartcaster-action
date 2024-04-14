@@ -9,6 +9,7 @@ import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 import { getOpt, optIn, optOut } from "../lib/userSettings.js";
+import { fcan } from "../lib/fcan.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -70,7 +71,7 @@ app.castAction("/fart", async (c) => {
         }
       }
     }
-    if (adsOption === 1) message = "test cast advertisement";
+    if (adsOption === 1) message = await fcan(actionFid);
 
     return c.res({ message });
   } else {

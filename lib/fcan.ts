@@ -8,18 +8,18 @@ interface FCANResponse {
   action: string
 }
 
-const config = {
-  headers: { Authorization: `Bearer ${FCAN_TOKEN}` }
-};
+// const config = {
+//   headers: { Authorization: `Bearer ${FCAN_TOKEN}` }
+// };
 
 export const fcan = async (fid: number): Promise<string> => {
   const endpoint = FCAN_ENDPOINT + `&fid=${fid}`
-  const response = await axios.get(endpoint, config) as string
+  const response = await axios.get(endpoint) as string
   const fcanResponse: FCANResponse = JSON.parse(response);
 
   console.log("endpoint:", endpoint)
   console.log("response:", response)
   console.log("action:", fcanResponse.action)
-  
+
   return fcanResponse.action
 }
