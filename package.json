@@ -9,13 +9,16 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.29.0",
-    "frog": "^0.8.2",
-    "hono": "^4",
-    "pinata-fdk": "^3.6.1"
+    "axios": "^1.6.8",
+    "frog": "latest",
+    "hono": "^4.2.4",
+    "pinata-fdk": "^3.7.2"
   },
   "devDependencies": {
-    "tsx": "^4.7.1",
-    "typescript": "^5.3.3",
-    "vercel": "^32.4.1"
+    "@types/node": "^20.12.7",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5",
+    "valibot": "^0.30.0",
+    "vercel": "^32.7.2"
   }
 }
