@@ -15,10 +15,8 @@
     "pinata-fdk": "^3.7.2"
   },
   "devDependencies": {
-    "@types/node": "^20.12.7",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
-    "valibot": "^0.30.0",
     "vercel": "^32.7.2"
   }
 }
