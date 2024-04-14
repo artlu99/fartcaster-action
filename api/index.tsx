@@ -17,6 +17,9 @@ const ADD_URL =
 const REPO_URL =
   process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
 
+const AD_BLURB_80_CHARS_MAX =
+  process.env.AD_BLURB_80_CHARS_MAX ?? "no advertisement loaded";
+
 const fdk = new PinataFDK();
 
 export const app = new Frog({
@@ -40,6 +43,7 @@ app.castAction("/fart", async (c) => {
   if (verified) {
     const { username } = await fdk.getUserByFid(castFid);
     const kindMode = await isKind(actionFid);
+    const adsOption = await getOpt("ads", actionFid);
 
     let message = "preparing to Fart...";
     if (castFid === actionFid) {
@@ -69,6 +73,8 @@ app.castAction("/fart", async (c) => {
         }
       }
     }
+    if (adsOption) message = AD_BLURB_80_CHARS_MAX;
+
     return c.res({ message });
   } else {
     return c.res({ message: "Unauthorized", statusCode: 401 });
@@ -313,13 +319,13 @@ app.frame("/opt-in-out", async (c) => {
           FID {fid}: {optionText}
         </Heading>
         <Text align="center" size="24">
-          In: be shown ad frame, log FID
+          In: be shown advertisements, log FID
         </Text>
         <Text align="center" size="24">
-          Out: no frame, do not log
+          Out: no ads, do not log
         </Text>
         <Text align="center" size="24">
-          none: no frame, do not log
+          none: no ads, do not log
         </Text>
       </Box>
     ),
