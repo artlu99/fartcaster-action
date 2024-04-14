@@ -73,7 +73,7 @@ app.castAction("/fart", async (c) => {
         }
       }
     }
-    if (adsOption) message = AD_BLURB_80_CHARS_MAX;
+    if (adsOption === 1) message = AD_BLURB_80_CHARS_MAX;
 
     return c.res({ message });
   } else {
