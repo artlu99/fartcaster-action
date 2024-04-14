@@ -323,11 +323,22 @@ app.frame("/opt-in-out", async (c) => {
         </Text>
       </Box>
     ),
-    intents: [
-      <Button.Reset>⬅️ Back</Button.Reset>,
-      <Button value="in">Opt In</Button>,
-      <Button value="out">Opt Out</Button>,
-    ],
+    intents:
+      adsOption === 1
+        ? [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="out">Opt Out</Button>,
+          ]
+        : adsOption === -1
+        ? [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="in">Opt In</Button>,
+          ]
+        : [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="in">Opt In</Button>,
+            <Button value="out">Opt Out</Button>,
+          ],
   });
 });
 
