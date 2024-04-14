@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.29.0",
-    "axios": "^1.6.8",
     "frog": "^0.8.2",
     "hono": "^4.2.4",
     "pinata-fdk": "^3.7.2"
