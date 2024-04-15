@@ -1,16 +1,17 @@
-import { Button, Frog } from "frog";
+import { Button, Frog, TextInput } from "frog";
 import { devtools } from "frog/dev";
 import { pinata } from "frog/hubs";
 import { serveStatic } from "frog/serve-static";
 import { handle } from "frog/vercel";
 import { PinataFDK } from "pinata-fdk";
 import { candle, fart } from "../lib/fart.js";
-import { isShielded } from "../lib/shields.js";
+import { countShields, giveShield, isShielded } from "../lib/shields.js";
 import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 import { getOpt, optIn, optOut } from "../lib/userSettings.js";
 import { fcan } from "../lib/fcan.js";
+import { isWiseKing } from "../lib/wisekings.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -81,7 +82,10 @@ app.castAction("/fart", async (c) => {
 });
 
 // Frame handlers
-app.frame("/", (c) => {
+app.frame("/", async (c) => {
+  const fid = c.frameData?.fid ?? 0;
+  const wiseKingFlag = await isWiseKing(fid);
+
   return c.res({
     image: (
       <Box
@@ -98,15 +102,28 @@ app.frame("/", (c) => {
         </VStack>
       </Box>
     ),
-    intents: [
-      <Button.Link href={ADD_URL}>Add Action</Button.Link>,
-      <Button value="leaderboard" action="/leaderboard">
-        💨 Leaderboard
-      </Button>,
-      <Button value="cpanel" action="/cpanel">
-        🎛️ Control Panel
-      </Button>,
-    ],
+    intents: wiseKingFlag
+      ? [
+          <Button.Link href={ADD_URL}>Add Action</Button.Link>,
+          <Button value="leaderboard" action="/leaderboard">
+            💨 Leaderboard
+          </Button>,
+          <Button value="wisekings" action="/wisekings">
+            🗝️👑
+          </Button>,
+          <Button value="cpanel" action="/cpanel">
+            🎛️ Controls
+          </Button>,
+        ]
+      : [
+          <Button.Link href={ADD_URL}>Add Action</Button.Link>,
+          <Button value="leaderboard" action="/leaderboard">
+            💨 Leaderboard
+          </Button>,
+          <Button value="cpanel" action="/cpanel">
+            🎛️ Control Panel
+          </Button>,
+        ],
   });
 });
 
@@ -116,9 +133,9 @@ app.frame("/leaderboard", async (c) => {
     withScores: true,
   });
 
-  const firstName = await redis.hget("usernames", leaders[0]) as string;
-  const secondName = await redis.hget("usernames", leaders[2]) as string;
-  const thirdName = await redis.hget("usernames", leaders[4]) as string;
+  const firstName = (await redis.hget("usernames", leaders[0])) as string;
+  const secondName = (await redis.hget("usernames", leaders[2])) as string;
+  const thirdName = (await redis.hget("usernames", leaders[4])) as string;
 
   const fid = c.frameData?.fid ?? 0;
   let farts = 0;
@@ -177,16 +194,16 @@ app.frame("/more", async (c) => {
   });
 
   // this code probably fails badly before there's enough data
-  const most0 = await redis.hget("usernames", most[0]) as string;
-  const most1 = await redis.hget("usernames", most[2]) as string;
-  const most2 = await redis.hget("usernames", most[4]) as string;
-  const most3 = await redis.hget("usernames", most[6]) as string;
-  const most4 = await redis.hget("usernames", most[8]) as string;
-  const most5 = await redis.hget("usernames", most[10]) as string;
-  const most6 = await redis.hget("usernames", most[12]) as string;
-  const most7 = await redis.hget("usernames", most[14]) as string;
-  const most8 = await redis.hget("usernames", most[16]) as string;
-  const most9 = await redis.hget("usernames", most[18]) as string;
+  const most0 = (await redis.hget("usernames", most[0])) as string;
+  const most1 = (await redis.hget("usernames", most[2])) as string;
+  const most2 = (await redis.hget("usernames", most[4])) as string;
+  const most3 = (await redis.hget("usernames", most[6])) as string;
+  const most4 = (await redis.hget("usernames", most[8])) as string;
+  const most5 = (await redis.hget("usernames", most[10])) as string;
+  const most6 = (await redis.hget("usernames", most[12])) as string;
+  const most7 = (await redis.hget("usernames", most[14])) as string;
+  const most8 = (await redis.hget("usernames", most[16])) as string;
+  const most9 = (await redis.hget("usernames", most[18])) as string;
 
   const usercount = (await redis.hlen("usernames")) ?? 0;
 
@@ -344,6 +361,93 @@ app.frame("/opt-in-out", async (c) => {
             <Button value="in">Opt In</Button>,
             <Button value="out">Opt Out</Button>,
           ],
+  });
+});
+
+app.frame("/wisekings", async (c) => {
+  const fid = c.frameData?.fid ?? 0;
+
+  const username = (await redis.hget("usernames", fid.toString())) as string;
+  const wiseKingFlag = await isWiseKing(fid);
+
+  return c.res({
+    action: "/transfer-shield",
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <Heading color="fcPurple" align="center" size="32">
+          {username}: {wiseKingFlag ? "Wise King 🗝️👑" : "not a Wise King"}
+        </Heading>
+        {wiseKingFlag ? (
+          <VStack>
+            <Text align="center" size="24">
+              type 2 FIDs to transfer a shield
+            </Text>
+            <Text align="center" size="24">
+              e.g., 6546:3
+            </Text>
+          </VStack>
+        ) : undefined}
+      </Box>
+    ),
+    intents: wiseKingFlag
+      ? [
+          <Button.Reset>⬅️ Back</Button.Reset>,
+          <TextInput placeholder="6546:3" />,
+        ]
+      : [<Button.Reset>⬅️ Back</Button.Reset>],
+  });
+});
+
+app.frame("/transfer-shield", async (c) => {
+  const { buttonValue } = c;
+
+  const [fromFid, toFid] = buttonValue
+    ? buttonValue.split(":")
+    : [undefined, undefined];
+
+  const fid = c.frameData?.fid ?? 8004;
+  const wiseKingFlag = await isWiseKing(fid);
+
+  const attemptTransferFlag = wiseKingFlag && fromFid && toFid;
+  if (attemptTransferFlag) {
+    await giveShield(parseInt(fromFid), parseInt(toFid));
+  }
+
+  const shieldsCount = await countShields();
+
+  return c.res({
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <Heading color="fcPurple" align="center" size="32">
+          {wiseKingFlag ? "Wise King 🗝️👑" : "not a Wise King"}
+        </Heading>
+        {wiseKingFlag ? (
+          <VStack>
+            <Text align="center" size="24">
+              there are {shieldsCount} shields
+            </Text>
+            <Text align="center" size="24">
+              {attemptTransferFlag
+                ? "shield transferred"
+                : "no shields transferred"}
+            </Text>
+          </VStack>
+        ) : undefined}
+      </Box>
+    ),
+    intents: [<Button.Reset>⬅️ Back</Button.Reset>],
   });
 });
 
