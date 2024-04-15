@@ -405,10 +405,10 @@ app.frame("/wisekings", async (c) => {
 });
 
 app.frame("/transfer-shield", async (c) => {
-  const { buttonValue } = c;
+  const { inputText } = c;
 
-  const [fromFid, toFid] = buttonValue
-    ? buttonValue.split(":")
+  const [fromFid, toFid] = inputText
+    ? inputText.split(":")
     : [undefined, undefined];
 
   const fid = c.frameData?.fid ?? 0;
