@@ -352,18 +352,18 @@ app.frame("/opt-in-out-logging", async (c) => {
     intents:
       loggingOption === 1
         ? [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/cpanel">⬅️ Back</Button>,
             <Button value="out">Opt Out</Button>,
             <Button action="/opt-in-out-ads">Next 👉</Button>,
           ]
         : loggingOption === -1
         ? [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/cpanel">⬅️ Back</Button>,
             <Button value="in">Opt In</Button>,
             <Button action="/opt-in-out-ads">Next 👉</Button>,
           ]
         : [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/cpanel">⬅️ Back</Button>,
             <Button value="in">Opt In</Button>,
             <Button value="out">Opt Out</Button>,
             <Button action="/opt-in-out-ads">Next 👉</Button>,
@@ -412,16 +412,16 @@ app.frame("/opt-in-out-ads", async (c) => {
     intents:
       adsOption === 1
         ? [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/opt-in-out-logging">⬅️ Back</Button>,
             <Button value="out">Opt Out</Button>,
           ]
         : adsOption === -1
         ? [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/opt-in-out-logging">⬅️ Back</Button>,
             <Button value="in">Opt In</Button>,
           ]
         : [
-            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button action="/opt-in-out-logging">⬅️ Back</Button>,
             <Button value="in">Opt In</Button>,
             <Button value="out">Opt Out</Button>,
           ],
@@ -512,7 +512,7 @@ app.frame("/transfer-shield", async (c) => {
         ) : undefined}
       </Box>
     ),
-    intents: [<Button.Reset>⬅️ Back</Button.Reset>],
+    intents: [<Button.Reset>⬅️ Start Over</Button.Reset>],
   });
 });
 
