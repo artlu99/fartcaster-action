@@ -411,7 +411,7 @@ app.frame("/transfer-shield", async (c) => {
     ? buttonValue.split(":")
     : [undefined, undefined];
 
-  const fid = c.frameData?.fid ?? 8004;
+  const fid = c.frameData?.fid ?? 0;
   const wiseKingFlag = await isWiseKing(fid);
 
   const attemptTransferFlag = wiseKingFlag && fromFid && toFid;
