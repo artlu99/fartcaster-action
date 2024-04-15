@@ -46,14 +46,16 @@ app.castAction("/fart", async (c) => {
     const adsOption = await getOpt("ads", actionFid);
 
     let message = "preparing to Fart...";
-    if (castFid === actionFid) {
-      await candle(castFid, username);
+    if (adsOption === 1) {
+      message = await fcan(actionFid);
+    } else if (castFid === actionFid) {
+      candle(castFid, username);
       message = "Lit candle, 1 fart removed.";
     } else {
       const isCastAuthorShielded = await isShielded(castFid);
       if (isCastAuthorShielded) {
         const { username: actionUsername } = await fdk.getUserByFid(actionFid);
-        await fart(actionFid, actionUsername);
+        fart(actionFid, actionUsername);
         message =
           `${username} farted ` +
           (kindMode ? "in your general direction" : "on you!");
@@ -62,7 +64,7 @@ app.castAction("/fart", async (c) => {
         }
         return c.res({ message, statusCode: 400 });
       } else {
-        await fart(castFid, username);
+        fart(castFid, username);
         message =
           "You farted " +
           (kindMode
@@ -73,8 +75,6 @@ app.castAction("/fart", async (c) => {
         }
       }
     }
-    if (adsOption === 1) message = await fcan(actionFid);
-
     return c.res({ message });
   } else {
     return c.res({ message: "Unauthorized", statusCode: 401 });
@@ -193,7 +193,7 @@ app.frame("/more", async (c) => {
     withScores: true,
   });
 
-  // this code probably fails badly before there's enough data
+  // this code probably fails badly if it's run on a redis store without enough data
   const most0 = (await redis.hget("usernames", most[0])) as string;
   const most1 = (await redis.hget("usernames", most[2])) as string;
   const most2 = (await redis.hget("usernames", most[4])) as string;
