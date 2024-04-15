@@ -302,12 +302,76 @@ app.frame("/cpanel", async (c) => {
       <Button value={kindMode ? "unset" : "set"}>
         {kindMode ? "Be direct" : "Be kind"}
       </Button>,
-      <Button action="/opt-in-out">Next 👉</Button>,
+      <Button action="/opt-in-out-logging">Next 👉</Button>,
     ],
   });
 });
 
-app.frame("/opt-in-out", async (c) => {
+app.frame("/opt-in-out-logging", async (c) => {
+  const fid = c.frameData?.fid ?? 0;
+
+  const { buttonValue } = c;
+  if (buttonValue === "in") {
+    await optIn("logging", fid);
+  } else if (buttonValue === "out") {
+    await optOut("logging", fid);
+  }
+
+  const loggingOption = await getOpt("logging", fid);
+  const optionText =
+    loggingOption === 1
+      ? "opted In"
+      : loggingOption === -1
+      ? "opted Out"
+      : "none";
+
+  return c.res({
+    action: "/opt-in-out-logging",
+    image: (
+      <Box
+        grow
+        alignVertical="center"
+        backgroundColor="white"
+        padding="32"
+        border="1em solid rgb(138, 99, 210)"
+      >
+        <Heading color="fcPurple" align="center" size="48">
+          FID {fid}: {optionText}
+        </Heading>
+        <Text align="center" size="24">
+          In: log FID of all fart actions
+        </Text>
+        <Text align="center" size="24">
+          Out: do not log any fart action
+        </Text>
+        <Text align="center" size="24">
+          not yet specified: do not log any fart action
+        </Text>
+      </Box>
+    ),
+    intents:
+      loggingOption === 1
+        ? [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="out">Opt Out</Button>,
+            <Button action="/opt-in-out-ads">Next 👉</Button>,
+          ]
+        : loggingOption === -1
+        ? [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="in">Opt In</Button>,
+            <Button action="/opt-in-out-ads">Next 👉</Button>,
+          ]
+        : [
+            <Button.Reset>⬅️ Back</Button.Reset>,
+            <Button value="in">Opt In</Button>,
+            <Button value="out">Opt Out</Button>,
+            <Button action="/opt-in-out-ads">Next 👉</Button>,
+          ],
+  });
+});
+
+app.frame("/opt-in-out-ads", async (c) => {
   const fid = c.frameData?.fid ?? 0;
 
   const { buttonValue } = c;
@@ -322,7 +386,7 @@ app.frame("/opt-in-out", async (c) => {
     adsOption === 1 ? "opted In" : adsOption === -1 ? "opted Out" : "none";
 
   return c.res({
-    action: "/opt-in-out",
+    action: "/opt-in-out-ads",
     image: (
       <Box
         grow
