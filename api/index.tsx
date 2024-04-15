@@ -341,7 +341,7 @@ app.frame("/opt-in-out", async (c) => {
           Out: no ads, do not log
         </Text>
         <Text align="center" size="24">
-          none: no ads, do not log
+          not yet specified: no ads, do not log
         </Text>
       </Box>
     ),
