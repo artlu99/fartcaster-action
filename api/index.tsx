@@ -398,6 +398,7 @@ app.frame("/wisekings", async (c) => {
     intents: wiseKingFlag
       ? [
           <Button.Reset>⬅️ Back</Button.Reset>,
+          <Button value="Submit">Go</Button>,
           <TextInput placeholder="6546:3" />,
         ]
       : [<Button.Reset>⬅️ Back</Button.Reset>],
