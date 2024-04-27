@@ -15,7 +15,7 @@ import { isWiseKing } from "../lib/wisekings.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
-  "https://warpcast.com/~/add-cast-action?name=Fart&icon=flame&actionType=post&postUrl=https://fartcaster-action.vercel.app/api/fart";
+  "https://warpcast.com/~/add-cast-action?url=https://fartcaster-action.vercel.app/api/fart";
 
 const REPO_URL =
   process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
@@ -104,7 +104,15 @@ app.frame("/", async (c) => {
     ),
     intents: wiseKingFlag
       ? [
-          <Button.Link href={ADD_URL}>Add Action</Button.Link>,
+          <Button.AddCastAction
+            action="/fart"
+            name="Fart"
+            icon="flame"
+            description="Fart on casts, show results on a leaderboard."
+            aboutUrl={REPO_URL}
+          >
+            Add Action
+          </Button.AddCastAction>,
           <Button value="leaderboard" action="/leaderboard">
             💨 Leaderboard
           </Button>,
