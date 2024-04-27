@@ -43,7 +43,9 @@ app.castAction(
     } = c;
 
     if (verified) {
-      const { username } = await fdk.getUserByFid(castFid);
+      const user = await fdk.getUserByFid(castFid);
+      const username = user ? user.username : castFid.toString();
+
       const kindMode = await isKind(actionFid);
       const adsOption = await getOpt("ads", actionFid);
 
