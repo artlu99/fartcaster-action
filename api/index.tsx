@@ -31,55 +31,66 @@ export const app = new Frog({
 });
 
 // Cast action handler
-app.castAction("/fart", async (c) => {
-  const {
-    verified,
-    actionData: {
-      fid: actionFid,
-      castId: { fid: castFid },
-    },
-  } = c;
+app.castAction(
+  "/fart",
+  async (c) => {
+    const {
+      verified,
+      actionData: {
+        fid: actionFid,
+        castId: { fid: castFid },
+      },
+    } = c;
 
-  if (verified) {
-    const { username } = await fdk.getUserByFid(castFid);
-    const kindMode = await isKind(actionFid);
-    const adsOption = await getOpt("ads", actionFid);
+    if (verified) {
+      const { username } = await fdk.getUserByFid(castFid);
+      const kindMode = await isKind(actionFid);
+      const adsOption = await getOpt("ads", actionFid);
 
-    let message = "preparing to Fart...";
-    if (adsOption === 1) {
-      message = await fcan(actionFid);
-    } else if (castFid === actionFid) {
-      candle(castFid, username);
-      message = "Lit candle, 1 fart removed.";
-    } else {
-      const isCastAuthorShielded = await isShielded(castFid);
-      if (isCastAuthorShielded) {
-        const { username: actionUsername } = await fdk.getUserByFid(actionFid);
-        fart(actionFid, actionUsername);
-        message =
-          `${username} farted ` +
-          (kindMode ? "in your general direction" : "on you!");
-        if (message.length > 80) {
-          message = "Shields up!";
-        }
-        return c.res({ message, statusCode: 400 });
+      let message = "preparing to Fart...";
+      if (adsOption === 1) {
+        message = await fcan(actionFid);
+      } else if (castFid === actionFid) {
+        candle(castFid, username);
+        message = "Lit candle, 1 fart removed.";
       } else {
-        fart(castFid, username);
-        message =
-          "You farted " +
-          (kindMode
-            ? `in the general direction of ${username}`
-            : `on ${username}`);
-        if (message.length > 80) {
-          message = "Farted!";
+        const isCastAuthorShielded = await isShielded(castFid);
+        if (isCastAuthorShielded) {
+          const { username: actionUsername } = await fdk.getUserByFid(
+            actionFid
+          );
+          fart(actionFid, actionUsername);
+          message =
+            `${username} farted ` +
+            (kindMode ? "in your general direction" : "on you!");
+          if (message.length > 80) {
+            message = "Shields up!";
+          }
+          return c.res({ message, statusCode: 400 });
+        } else {
+          fart(castFid, username);
+          message =
+            "You farted " +
+            (kindMode
+              ? `in the general direction of ${username}`
+              : `on ${username}`);
+          if (message.length > 80) {
+            message = "Farted!";
+          }
         }
       }
+      return c.res({ message });
+    } else {
+      return c.res({ message: "Unauthorized", statusCode: 401 });
     }
-    return c.res({ message });
-  } else {
-    return c.res({ message: "Unauthorized", statusCode: 401 });
+  },
+  {
+    name: "Fart",
+    icon: "flame",
+    description: "Fart on casts, show results on a leaderboard.",
+    aboutUrl: { REPO_URL },
   }
-});
+);
 
 // Frame handlers
 app.frame("/", async (c) => {
@@ -104,13 +115,7 @@ app.frame("/", async (c) => {
     ),
     intents: wiseKingFlag
       ? [
-          <Button.AddCastAction
-            action="/fart"
-            name="Fart"
-            icon="flame"
-            description="Fart on casts, show results on a leaderboard."
-            aboutUrl={REPO_URL}
-          >
+          <Button.AddCastAction action="/fart">
             Add Action
           </Button.AddCastAction>,
           <Button value="leaderboard" action="/leaderboard">
@@ -124,7 +129,9 @@ app.frame("/", async (c) => {
           </Button>,
         ]
       : [
-          <Button.Link href={ADD_URL}>Add Action</Button.Link>,
+          <Button.AddCastAction action="/fart">
+            Add Action
+          </Button.AddCastAction>,
           <Button value="leaderboard" action="/leaderboard">
             💨 Leaderboard
           </Button>,
