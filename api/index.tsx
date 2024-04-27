@@ -13,12 +13,8 @@ import { getOpt, optIn, optOut } from "../lib/userSettings.js";
 import { fcan } from "../lib/fcan.js";
 import { isWiseKing } from "../lib/wisekings.js";
 
-const ADD_URL =
-  process.env.ADD_URL ??
-  "https://warpcast.com/~/add-cast-action?url=https://fartcaster-action.vercel.app/api/fart";
-
-const REPO_URL =
-  process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
+const ADD_URL = import.meta.env.ADD_URL as string;
+const REPO_URL = import.meta.env.REPO_URL as string;
 
 const fdk = new PinataFDK();
 
