@@ -88,7 +88,7 @@ app.castAction(
     name: "Fart",
     icon: "flame",
     description: "Fart on casts, show results on a leaderboard.",
-    aboutUrl: { REPO_URL },
+    aboutUrl: REPO_URL,
   }
 );
 
