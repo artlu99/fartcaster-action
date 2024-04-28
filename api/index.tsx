@@ -20,7 +20,12 @@ const ADD_URL =
 const REPO_URL =
   process.env.REPO_URL ?? "https://github.com/artlu99/fartcaster-action";
 
-const fdk = new PinataFDK();
+const PINATA_JWT = process.env.PINATA_JWT ?? "";
+
+const fdk = new PinataFDK({
+  pinata_jwt: PINATA_JWT,
+  pinata_gateway: "",
+});
 
 export const app = new Frog({
   assetsPath: "/",
@@ -43,8 +48,7 @@ app.castAction(
     } = c;
 
     if (verified) {
-      const user = await fdk.getUserByFid(castFid);
-      const username = user ? user.username : castFid.toString();
+      const { username } = await fdk.getUserByFid(castFid);
 
       const kindMode = await isKind(actionFid);
       const adsOption = await getOpt("ads", actionFid);
