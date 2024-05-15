@@ -54,7 +54,7 @@ app.castAction(
       const adsOption = await getOpt("ads", actionFid);
 
       if (adsOption === 1) {
-        return c.frame({ path: "/advert" });
+        return c.res({ type: "frame", path: "/advert" });
       }
 
       let message = "preparing to Fart...";
