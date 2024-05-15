@@ -53,11 +53,12 @@ app.castAction(
       const kindMode = await isKind(actionFid);
       const adsOption = await getOpt("ads", actionFid);
 
-      let message = "preparing to Fart...";
       if (adsOption === 1) {
-        message = await fcan(actionFid);
-        // return c.frame({ action: "/advert" });
-      } else if (castFid === actionFid) {
+        return c.res({ type: "frame", action: "/advert" });
+      }
+
+      let message = "preparing to Fart...";
+      if (castFid === actionFid) {
         candle(castFid, username);
         message = "Lit candle, 1 fart removed.";
       } else {
