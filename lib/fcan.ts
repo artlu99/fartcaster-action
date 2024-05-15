@@ -17,6 +17,5 @@ export const fcan = async (fid: number): Promise<FCANResponse> => {
   const endpoint = FCAN_ENDPOINT + `&fid=${fid}`;
   const response = await fetch(endpoint, config);
   const fcanResponse: FCANResponse = await response.json();
-
   return fcanResponse;
 };
