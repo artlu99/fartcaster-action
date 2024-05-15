@@ -55,7 +55,8 @@ app.castAction(
 
       let message = "preparing to Fart...";
       if (adsOption === 1) {
-        return c.frame({ action: "/advert" });
+        message = await fcan(actionFid);
+        // return c.frame({ action: "/advert" });
       } else if (castFid === actionFid) {
         candle(castFid, username);
         message = "Lit candle, 1 fart removed.";
