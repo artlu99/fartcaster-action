@@ -8,13 +8,13 @@
     "deploy": "vercel"
   },
   "dependencies": {
-    "@upstash/redis": "^1.30.0",
-    "frog": "0.8.6-multi-step-cast-actions.20240426T232515",
-    "hono": "^4.2.8",
-    "pinata-fdk": "^3.10.1"
+    "@upstash/redis": "^1.31.1",
+    "frog": "^0.9.4",
+    "hono": "^4.3.7",
+    "pinata-fdk": "^3.10.2"
   },
   "devDependencies": {
-    "tsx": "^4.7.3",
+    "tsx": "^4.10.2",
     "typescript": "^5.4.5",
     "vercel": "^32.7.2"
   }

@@ -72,7 +72,7 @@ app.castAction(
           if (message.length > 80) {
             message = "Shields up!";
           }
-          return c.res({ message, statusCode: 400 });
+          return c.message({ message });
         } else {
           fart(castFid, username);
           message =
@@ -85,9 +85,9 @@ app.castAction(
           }
         }
       }
-      return c.res({ message });
+      return c.message({ message });
     } else {
-      return c.res({ message: "Unauthorized", statusCode: 401 });
+      return c.error({ message: "Unauthorized" });
     }
   },
   {
