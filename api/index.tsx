@@ -55,7 +55,7 @@ app.castAction(
 
       let message = "preparing to Fart...";
       if (adsOption === 1) {
-        message = await fcan(actionFid);
+        return c.frame({ action: "/advert" });
       } else if (castFid === actionFid) {
         candle(castFid, username);
         message = "Lit candle, 1 fart removed.";
@@ -535,6 +535,31 @@ app.frame("/transfer-shield", async (c) => {
     ),
     intents: [<Button.Reset>⬅️ Start Over</Button.Reset>],
   });
+});
+
+app.frame("/advert", async (c) => {
+  const { verified, frameData } = c;
+  if (verified && frameData) {
+    const {
+      fid: actionFid,
+      castId: { fid: castFid, hash: castHash },
+    } = frameData;
+
+    const message = await fcan(actionFid);
+
+    return c.res({
+      image: (
+        <div style={{ color: "white", display: "flex", fontSize: 60 }}>
+          {message}
+          creator: {castHash} by {castFid}
+          user: {actionFid}
+        </div>
+      ),
+      intents: [<Button.Link href={"https://fcan.xyz"}>FCAN</Button.Link>],
+    });
+  } else {
+    return c.error({ message: "Unauthorized" });
+  }
 });
 
 // delete this after 1 week when cache has cleared for original frame
