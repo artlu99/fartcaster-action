@@ -541,7 +541,9 @@ app.frame("/transfer-shield", async (c) => {
 
 app.frame("/advert", async (c) => {
   const { verified, frameData } = c;
+  if (verified) console.log("verified");
   if (verified && frameData) {
+    console.log("verified and frameData exist");
     const {
       fid: actionFid,
       castId: { fid: castFid, hash: castHash },
