@@ -54,7 +54,7 @@ app.castAction(
       const adsOption = await getOpt("ads", actionFid);
 
       if (adsOption === 1) {
-        return c.res({ type: "frame", action: "/advert" });
+        return c.frame({ path: "/advert" });
       }
 
       let message = "preparing to Fart...";
@@ -542,7 +542,7 @@ app.frame("/transfer-shield", async (c) => {
 app.frame("/advert", async (c) => {
   console.log(c);
   return c.error({ message: JSON.stringify(c) });
-  
+
   const { frameData } = c;
   if (frameData) {
     console.log("verified and frameData exist");
