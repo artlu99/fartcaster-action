@@ -541,6 +541,8 @@ app.frame("/transfer-shield", async (c) => {
 
 app.frame("/advert", async (c) => {
   console.log(c);
+  return c.error({ message: JSON.stringify(c) });
+  
   const { frameData } = c;
   if (frameData) {
     console.log("verified and frameData exist");
