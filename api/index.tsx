@@ -10,7 +10,7 @@ import { Box, Heading, HStack, Text, VStack, vars } from "../lib/ui.js";
 import redis from "../lib/redis.js";
 import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 import { getOpt, optIn, optOut } from "../lib/userSettings.js";
-import { fcan } from "../lib/fcan.js";
+import { FCANResponse, fcan } from "../lib/fcan.js";
 import { isWiseKing } from "../lib/wisekings.js";
 
 const ADD_URL =
@@ -544,20 +544,35 @@ app.frame("/advert", async (c) => {
   if (verified && frameData) {
     const {
       fid: actionFid,
-      castId: { fid: castFid, hash: castHash },
+      // castId: { fid: castFid, hash: castHash },
     } = frameData;
 
-    const message = await fcan(actionFid);
+    const advert: FCANResponse = await fcan(actionFid);
 
     return c.res({
       image: (
-        <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-          {message}
-          creator: {castHash} by {castFid}
-          user: {actionFid}
+        <div style={{ color: "black", display: "flex", fontSize: 60 }}>
+          {advert.head} {advert.text}
         </div>
       ),
-      intents: [<Button.Link href={"https://fcan.xyz"}>FCAN</Button.Link>],
+      intents: advert.attribUrl
+        ? [
+            <Button.Link href={`${advert.displayUrl}`}>
+              Not tracked
+            </Button.Link>,
+            <Button.Link href={`https://fcan.xyz/transparency?id=${advert.id}`}>
+              FCAN
+            </Button.Link>,
+          ]
+        : [
+            <Button.Link href={`${advert.displayUrl}`}>
+              Not tracked
+            </Button.Link>,
+            <Button.Link href={`${advert.attribUrl}`}>Tracked</Button.Link>,
+            <Button.Link href={`https://fcan.xyz/transparency?id=${advert.id}`}>
+              FCAN
+            </Button.Link>,
+          ],
     });
   } else {
     return c.error({ message: "Unauthorized" });
