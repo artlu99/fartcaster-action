@@ -551,9 +551,20 @@ app.frame("/advert", async (c) => {
 
     return c.res({
       image: (
-        <div style={{ color: "black", display: "flex", fontSize: 60 }}>
-          {advert.head} {advert.text}
-        </div>
+        <Box
+          grow
+          alignVertical="center"
+          backgroundColor="white"
+          padding="32"
+          border="1em solid rgb(138, 99, 210)"
+        >
+          <Heading color="fcPurple" align="center" size="48">
+            {advert.head}
+          </Heading>
+          <Text align="center" size="32">
+            {advert.text}
+          </Text>
+        </Box>
       ),
       intents: advert.attribUrl
         ? [
