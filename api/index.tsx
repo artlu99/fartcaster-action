@@ -540,21 +540,21 @@ app.frame("/transfer-shield", async (c) => {
 });
 
 app.frame("/advert", async (c) => {
-  const { verified, frameData } = c;
-  if (verified) console.log("verified");
-  if (verified && frameData) {
+  console.log(c);
+  const { frameData } = c;
+  if (frameData) {
     console.log("verified and frameData exist");
     const {
       fid: actionFid,
       castId: { fid: castFid, hash: castHash },
     } = frameData;
 
-    const message = await fcan(actionFid);
+    // const message = await fcan(actionFid);
 
     return c.res({
       image: (
         <div style={{ color: "white", display: "flex", fontSize: 60 }}>
-          {message}
+          {/* {message} */}
           creator: {castHash} by {castFid}
           user: {actionFid}
         </div>
