@@ -23,6 +23,9 @@ const REPO_URL =
 
 const PINATA_JWT = process.env.PINATA_JWT ?? "";
 
+const PudgyPizzaDelivery = () =>
+  "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjl1eXI2cjIxaDBkZWkzb2V2cjZjY20wbzd2Y2V1YmZzanVlMmkwbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vwCa7HNSi1J16IOGO3/giphy.gif";
+
 const fdk = new PinataFDK({
   pinata_jwt: PINATA_JWT,
   pinata_gateway: "",
@@ -60,6 +63,12 @@ app.castAction(
 
       let message = "preparing to Fart...";
       if (castFid === actionFid) {
+        const farts = (await redis.zscore("farts", actionFid)) ?? 0;
+        if (farts < 0) {
+          // you are negative already
+          return c.res({ type: "frame", path: "/on-fire" });
+        }
+
         candle(castFid, username);
         message = "Lit candle, 1 fart removed.";
       } else {
@@ -585,6 +594,28 @@ app.frame("/advert", async (c) => {
               FCAN
             </Button.Link>,
           ],
+    });
+  } else {
+    return c.error({ message: "Unauthorized" });
+  }
+});
+
+app.frame("/on-fire", async (c) => {
+  const { verified, frameData } = c;
+  if (verified && frameData) {
+    const {
+      fid: actionFid,
+      // castId: { fid: castFid, hash: castHash },
+    } = frameData;
+
+    const farts = (await redis.zscore("farts", actionFid)) ?? 0;
+
+    return c.res({
+      image: PudgyPizzaDelivery(),
+      intents: [
+        <Button>${farts.toString()} Farts 🍑💨</Button>,
+        <Button>Yer burning 🕯️🔥</Button>,
+      ],
     });
   } else {
     return c.error({ message: "Unauthorized" });
