@@ -12,6 +12,7 @@ import { isKind, setKind, unsetKind } from "../lib/kindness.js";
 import { getOpt, optIn, optOut } from "../lib/userSettings.js";
 import { FCANResponse, fcan } from "../lib/fcan.js";
 import { isWiseKing } from "../lib/wisekings.js";
+import { getUsername } from "../lib/username.js";
 
 const ADD_URL =
   process.env.ADD_URL ??
@@ -151,14 +152,14 @@ app.frame("/", async (c) => {
 });
 
 app.frame("/leaderboard", async (c) => {
-  const leaders: string[] = await redis.zrange("farts", 0, 3, {
+  const leaders: number[] = await redis.zrange("farts", 0, 3, {
     rev: true,
     withScores: true,
   });
 
-  const firstName = (await redis.hget("usernames", leaders[0])) as string;
-  const secondName = (await redis.hget("usernames", leaders[2])) as string;
-  const thirdName = (await redis.hget("usernames", leaders[4])) as string;
+  const firstName = await getUsername(leaders[0]);
+  const secondName = await getUsername(leaders[2]);
+  const thirdName = await getUsername(leaders[4]);
 
   const fid = c.frameData?.fid ?? 0;
   let farts = 0;
@@ -211,22 +212,22 @@ app.frame("/leaderboard", async (c) => {
 });
 
 app.frame("/more", async (c) => {
-  const most: string[] = await redis.zrange("farts", 0, 10, {
+  const most: number[] = await redis.zrange("farts", 0, 10, {
     rev: true,
     withScores: true,
   });
 
   // this code probably fails badly if it's run on a redis store without enough data
-  const most0 = (await redis.hget("usernames", most[0])) as string;
-  const most1 = (await redis.hget("usernames", most[2])) as string;
-  const most2 = (await redis.hget("usernames", most[4])) as string;
-  const most3 = (await redis.hget("usernames", most[6])) as string;
-  const most4 = (await redis.hget("usernames", most[8])) as string;
-  const most5 = (await redis.hget("usernames", most[10])) as string;
-  const most6 = (await redis.hget("usernames", most[12])) as string;
-  const most7 = (await redis.hget("usernames", most[14])) as string;
-  const most8 = (await redis.hget("usernames", most[16])) as string;
-  const most9 = (await redis.hget("usernames", most[18])) as string;
+  const most0 = await getUsername(most[0]);
+  const most1 = await getUsername(most[2]);
+  const most2 = await getUsername(most[4]);
+  const most3 = await getUsername(most[6]);
+  const most4 = await getUsername(most[8]);
+  const most5 = await getUsername(most[10]);
+  const most6 = await getUsername(most[12]);
+  const most7 = await getUsername(most[14]);
+  const most8 = await getUsername(most[16]);
+  const most9 = await getUsername(most[18]);
 
   const usercount = (await redis.hlen("usernames")) ?? 0;
 
@@ -299,7 +300,7 @@ app.frame("/cpanel", async (c) => {
     await unsetKind(fid);
   }
 
-  const username = (await redis.hget("usernames", fid.toString())) as string;
+  const username = await getUsername(fid, fdk);
   const kindMode = await isKind(fid);
 
   return c.res({
@@ -454,7 +455,7 @@ app.frame("/opt-in-out-ads", async (c) => {
 app.frame("/wisekings", async (c) => {
   const fid = c.frameData?.fid ?? 0;
 
-  const username = (await redis.hget("usernames", fid.toString())) as string;
+  const username = await getUsername(fid, fdk);
   const wiseKingFlag = await isWiseKing(fid);
 
   return c.res({
