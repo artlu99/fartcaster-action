@@ -613,11 +613,11 @@ app.frame("/on-fire", async (c) => {
     return c.res({
       image: PudgyPizzaDelivery(),
       intents: [
-        <Button>Too many 🕯️🔥</Button>,
+        <Button>🕯️ knocked over</Button>,
         <Button value="leaderboard" action="/leaderboard">
           💨 Leaderboard
         </Button>,
-        <Button>{farts.toString()} Farts 🍑💨</Button>,
+        <Button>Room on 🔥</Button>,
       ],
     });
   } else {
