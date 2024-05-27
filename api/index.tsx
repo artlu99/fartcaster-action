@@ -581,7 +581,7 @@ app.frame("/advert", async (c) => {
             <Button.Link href={`${advert.displayUrl}`}>
               Not tracked
             </Button.Link>,
-            <Button.Link href={`${advert.attribUrl}`}>Tracked</Button.Link>,
+            <Button.Link href={`https://fcan.xyz/r?id=${advert.id}`}>Tracked</Button.Link>,
             <Button.Link href={`https://fcan.xyz/transparency?id=${advert.id}`}>
               FCAN
             </Button.Link>,
