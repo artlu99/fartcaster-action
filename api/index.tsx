@@ -625,6 +625,13 @@ app.frame("/on-fire", async (c) => {
   }
 });
 
+// this was a dynamically-generated landing image which got cached as a 404
+app.get(
+  "/image&s=724507676c1e1d0d8f0e14b0e8021672b2b9b4e76b7569cfd8ce0e5d58cf5556",
+  (c) =>
+    c.redirect("https://r2.channel-frames.fcan.xyz/farts-action-landing.png")
+);
+
 // delete this after 1 week when cache has cleared for original frame
 app.frame("/farts", async (c) => {
   const fid = c.frameData?.fid ?? 0;
