@@ -2,7 +2,7 @@ import { Button, Frog, TextInput } from "frog";
 import { devtools } from "frog/dev";
 import { pinata } from "frog/hubs";
 import { serveStatic } from "frog/serve-static";
-import { handle } from "frog/vercel";
+import { handle } from "frog/next";
 import { PinataFDK } from "pinata-fdk";
 import { candle, fart } from "../lib/fart.js";
 import { countShields, giveShield, isShielded } from "../lib/shields.js";

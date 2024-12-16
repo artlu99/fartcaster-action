@@ -8,14 +8,15 @@
     "deploy": "vercel"
   },
   "dependencies": {
-    "@upstash/redis": "^1.31.1",
-    "frog": "^0.9.4",
-    "hono": "^4.3.7",
+    "@upstash/redis": "^1.34.3",
+    "frog": "^0.18.3",
+    "hono": "^4.6.14",
     "pinata-fdk": "^3.10.2"
   },
   "devDependencies": {
-    "tsx": "^4.10.2",
-    "typescript": "^5.4.5",
-    "vercel": "^32.7.2"
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vercel": "^39.2.2"
   }
 }
